@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.kr.board.service.mapper.BoardMapper">
+
+	<select id="list" resultType="co.kr.board.VO.BoardVO">
+	<![CDATA[
+		SELECT * FROM
+		(SELECT 
+			 ROW_NUMBER() OVER(ORDER BY board_num desc) rn, board_num,board_title,board_content,board_author,board_day,board_view FROM board17
+			]]>	
+				<if test="keyword != null and keyword != ''">
+					where ${type} like '%'||#{keyword}||'%'
+				</if>
+				ORDER BY board_num desc
+			<![CDATA[
+		)a
+		where a.rn > #{startRn}
+		and a.rn <= #{endRn}
+	]]>
+	</select>
+	
+	<select id="total" resultType="int">
+		SELECT COUNT(*)
+		FROM   board17
+		<if test="keyword != null and keyword != ''">
+				where ${type} like '%'||#{keyword}||'%'
+		</if>
+	</select>
+	
+	<select id="detail" resultType="co.kr.board.VO.BoardVO">
+		SELECT *
+		FROM   board17
+		WHERE  board_num = #{board_num}
+	</select>
+	
+	<update id="cntUp">
+		UPDATE board17
+		SET    board_view = #{board_view}
+		WHERE  board_num = #{board_num}
+	</update>
+	
+	<insert id="insert">
+		INSERT INTO
+		board17(board_num,
+				 board_title,
+				 board_content,
+				 board_author
+				)
+	 	VALUES  (#{board_num},
+	 			 #{board_title},
+	 			 #{board_content},
+	 			 #{board_author}
+	 	         )
+	</insert>
+	
+	<select id="cntMax" resultType="int">
+		SELECT MAX(board_num)
+		FROM   board17
+	</select>
+	
+	<delete id="delete">
+		DELETE FROM
+			   board17
+		WHERE  board_num = #{board_num}
+	</delete>
+	
+	<update id="modify">
+		UPDATE board17
+		SET    board_title = #{board_title},
+			   board_content = #{board_content}
+		WHERE  board_num = #{board_num}
+	</update>
+</mapper>

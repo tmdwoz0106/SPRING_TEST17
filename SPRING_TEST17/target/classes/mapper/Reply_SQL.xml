@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.kr.reply.service.mapper.ReplyMapper">
+
+	<select id="reply" resultType="co.kr.reply.VO.ReplyVO">
+		SELECT 			 reply_num,
+						 board_num,
+						 reply_content,
+						 reply_author,
+						 reply_day,
+						 reply_group,
+						 reply_depth
+		FROM  			 reply17
+		WHERE            board_num = #{board_num}
+		START WITH 		 reply_group = 0
+		CONNECT BY PRIOR reply_num = reply_group
+	</select>
+
+	<select id="replyMax" resultType="int">
+		SELECT MAX(reply_num)
+		FROM   reply17
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO
+		reply17 (reply_num,
+				board_num,
+				reply_content,
+				reply_author,
+				reply_day,
+				reply_group,
+				reply_depth				
+				)
+		VALUES  (#{reply_num},
+				#{board_num},
+				#{reply_content},
+				#{reply_author},
+				#{reply_day},
+				#{reply_group},
+				#{reply_depth}	
+				)
+	</insert>
+	
+	<delete id="delete">
+		DELETE
+		FROM   reply17
+		WHERE  reply_num = #{reply_num}
+		and    board_num = #{board_num}
+	</delete>
+	
+	<select id="detail" resultType="co.kr.reply.VO.ReplyVO">
+		SELECT *
+		FROM   reply17
+		WHERE  reply_num = #{reply_num}
+		and    board_num = #{board_num}
+	</select>
+</mapper>
